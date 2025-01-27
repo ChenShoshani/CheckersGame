@@ -325,35 +325,85 @@ namespace CheckersGame.Logic
             if (parseBoardPosition(i_From, out int fromRow, out int fromCol) &&
                 parseBoardPosition(i_To, out int toRow, out int toCol))
             {
-                if (m_LastMove != null && Math.Abs(m_LastMove.FromRow - m_LastMove.ToRow) == 2 &&
-                    (m_LastMove.ToRow != fromRow || m_LastMove.ToCol != fromCol))
-                {
-                    result = eMoveResult.InvalidMove;
-                }
-                else if (PlayerMustCapture(m_CurrentPlayer) && Math.Abs(fromRow - toRow) != 2)
-                {
-                    result = eMoveResult.MustCapture;
-                }
-                else if (!isValidMove(fromRow, fromCol, toRow, toCol) && 
-                         !isValidJump(fromRow, fromCol, (fromRow + toRow) / 2, (fromCol + toCol) / 2, toRow, toCol))
-                {
-                    result = eMoveResult.InvalidMove;
-                }
-                else
-                {
-                    executeMove(fromRow, fromCol, toRow, toCol);
-                    m_LastMove = new Move(fromRow, fromCol, toRow, toCol);
+                result = eMoveResult.InvalidMove;
+                bool isInChain = false;
 
-                    if (Math.Abs(fromRow - toRow) == 2 && HasMoreJumps(toRow, toCol))
+                if (m_LastMove != null)
+                {
+                    int lastRowDiff = Math.Abs(m_LastMove.FromRow - m_LastMove.ToRow);
+                    if (lastRowDiff == 2) 
                     {
-                        result = eMoveResult.AdditionalCaptureRequired;
+                        isInChain = true;
+                    }
+                }
+
+                bool isPickedDifferentPiece = false;
+
+                if (isInChain)
+                {
+                    isPickedDifferentPiece = (m_LastMove.ToRow != fromRow || m_LastMove.ToCol != fromCol);
+                }
+
+                bool isSkipFurtherChecks = false;
+                bool isValidRegular = isValidMove(fromRow, fromCol, toRow, toCol);
+                bool isJumpValid = isValidJump(fromRow, fromCol, (fromRow + toRow) / 2,
+                                                  (fromCol + toCol) / 2, toRow, toCol);
+
+                bool isLegal = (isValidRegular || isJumpValid);
+
+                if (isInChain && isPickedDifferentPiece)
+                {
+                    if (!isLegal)
+                    {
+                        result = eMoveResult.InvalidMove;
                     }
                     else
                     {
-                        m_PreviousMove = m_LastMove;
-                        m_LastMove = null;
-                        switchTurns();
-                        result = eMoveResult.Success;
+                        result = eMoveResult.MustCaptureAgain;
+                    }
+
+                    isSkipFurtherChecks = true;
+                }
+
+                if (!isSkipFurtherChecks)
+                {
+                    if (!isLegal)
+                    {
+                        result = eMoveResult.InvalidMove;
+                    }
+                    else
+                    {
+                        bool isMustCapture = PlayerMustCapture(m_CurrentPlayer);
+                        int rowDiff = Math.Abs(fromRow - toRow);
+
+                        if (isMustCapture && rowDiff != 2)
+                        {
+                            if (isInChain)
+                            {
+                                result = eMoveResult.MustCaptureAgain;
+                            }
+                            else
+                            {
+                                result = eMoveResult.MustCapture;
+                            }
+                        }
+                        else
+                        {
+                            executeMove(fromRow, fromCol, toRow, toCol);
+                            m_LastMove = new Move(fromRow, fromCol, toRow, toCol);
+
+                            if (rowDiff == 2 && HasMoreJumps(toRow, toCol))
+                            {
+                                result = eMoveResult.AdditionalCaptureRequired;
+                            }
+                            else
+                            {
+                                m_PreviousMove = m_LastMove;
+                                m_LastMove = null;
+                                switchTurns();
+                                result = eMoveResult.Success;
+                            }
+                        }
                     }
                 }
             }

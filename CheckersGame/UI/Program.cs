@@ -10,8 +10,6 @@ namespace CheckersGame.UI
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-            // כל מה שעושים פה: מפעילים את הטופס הראשי/מנהל המשחק
             Application.Run(new FormGameManager());
         }
     }

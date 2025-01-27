@@ -7,5 +7,6 @@
         MustCapture,
         InvalidMove,
         AdditionalCaptureRequired,
+        MustCaptureAgain
     }
 }
