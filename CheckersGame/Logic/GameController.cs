@@ -346,21 +346,13 @@ namespace CheckersGame.Logic
 
                 bool isSkipFurtherChecks = false;
                 bool isValidRegular = isValidMove(fromRow, fromCol, toRow, toCol);
-                bool isJumpValid = isValidJump(fromRow, fromCol, (fromRow + toRow) / 2,
-                                                  (fromCol + toCol) / 2, toRow, toCol);
-
+                bool isJumpValid = isValidJump(fromRow, fromCol, (fromRow + toRow) / 2, 
+                    (fromCol + toCol) / 2, toRow, toCol);
                 bool isLegal = (isValidRegular || isJumpValid);
 
                 if (isInChain && isPickedDifferentPiece)
                 {
-                    if (!isLegal)
-                    {
-                        result = eMoveResult.InvalidMove;
-                    }
-                    else
-                    {
-                        result = eMoveResult.MustCaptureAgain;
-                    }
+                    result = !isLegal ? eMoveResult.InvalidMove : eMoveResult.MustCaptureAgain;
 
                     isSkipFurtherChecks = true;
                 }
@@ -378,20 +370,12 @@ namespace CheckersGame.Logic
 
                         if (isMustCapture && rowDiff != 2)
                         {
-                            if (isInChain)
-                            {
-                                result = eMoveResult.MustCaptureAgain;
-                            }
-                            else
-                            {
-                                result = eMoveResult.MustCapture;
-                            }
+                            result = isInChain ? eMoveResult.MustCaptureAgain : eMoveResult.MustCapture;
                         }
                         else
                         {
                             executeMove(fromRow, fromCol, toRow, toCol);
                             m_LastMove = new Move(fromRow, fromCol, toRow, toCol);
-
                             if (rowDiff == 2 && HasMoreJumps(toRow, toCol))
                             {
                                 result = eMoveResult.AdditionalCaptureRequired;

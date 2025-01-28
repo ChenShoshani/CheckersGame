@@ -32,7 +32,7 @@ namespace CheckersGame.UI
         private void initializeComponents()
         {
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.Text = @"Checkers Game";
+            this.Text = "Checkers Game";
             this.MaximizeBox = false; 
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             m_LabelPlayer1 = new Label();
@@ -53,8 +53,8 @@ namespace CheckersGame.UI
             int formWidth = boardWidthInPixels + 40;
 
             this.ClientSize = new Size(formWidth, this.ClientSize.Height);
-            m_LabelPlayer1.Text = $@"{m_GameController.FirstPlayer.Name}: {m_GameController.FirstPlayer.Score}";
-            m_LabelPlayer2.Text = $@"{m_GameController.SecondPlayer.Name}: {m_GameController.SecondPlayer.Score}";
+            m_LabelPlayer1.Text = $"{m_GameController.FirstPlayer.Name}: {m_GameController.FirstPlayer.Score}";
+            m_LabelPlayer2.Text = $"{m_GameController.SecondPlayer.Name}: {m_GameController.SecondPlayer.Score}";
             int player1LabelX = (formWidth / 4) - (m_LabelPlayer1.Width / 2); 
             int player2LabelX = (3 * formWidth / 4) - (m_LabelPlayer2.Width / 2); 
 
@@ -184,6 +184,7 @@ namespace CheckersGame.UI
                 m_SelectedButton = null;
             }
         }
+
         private void resetSelectedButtonColor(Point i_ButtonPosition)
         {
             int row = i_ButtonPosition.X;
@@ -216,16 +217,16 @@ namespace CheckersGame.UI
             switch (i_Result)
             {
                 case eMoveResult.InvalidFormat:
-                    MessageBox.Show(@"Invalid cell format!");
+                    MessageBox.Show("Invalid cell format!");
                     break;
                 case eMoveResult.InvalidMove:
-                    MessageBox.Show(@"Invalid move!");
+                    MessageBox.Show("Invalid move!");
                     break;
                 case eMoveResult.MustCapture:
-                    MessageBox.Show(@"You must capture!");
+                    MessageBox.Show("You must capture!");
                     break;
                 case eMoveResult.MustCaptureAgain:
-                    MessageBox.Show(@"You have to continue your previous capture!");
+                    MessageBox.Show("You have to continue your previous capture!");
                     break;
                 case eMoveResult.AdditionalCaptureRequired:
                     updateBoardUI();
@@ -242,7 +243,6 @@ namespace CheckersGame.UI
                     break;
             }
         }
-
 
         private bool isCellBelongToCurrentPlayer(eCellState i_CellState)
         {
@@ -282,9 +282,11 @@ namespace CheckersGame.UI
 
             return result;
         }
+
         private void updateBoardUI()
         {
             int boardSize = m_GameController.Board.Size;
+
             for (int row = 0; row < boardSize; row++)
             {
                 for (int col = 0; col < boardSize; col++)
@@ -302,14 +304,15 @@ namespace CheckersGame.UI
 
         private void updateScoresLabels()
         {
-            m_LabelPlayer1.Text = $@"{m_GameController.FirstPlayer.Name}: {m_GameController.FirstPlayer.Score}";
-            m_LabelPlayer2.Text = $@"{m_GameController.SecondPlayer.Name}: {m_GameController.SecondPlayer.Score}";
+            m_LabelPlayer1.Text = $"{m_GameController.FirstPlayer.Name}: {m_GameController.FirstPlayer.Score}";
+            m_LabelPlayer2.Text = $"{m_GameController.SecondPlayer.Name}: {m_GameController.SecondPlayer.Score}";
         }
 
         private string convertRowColToCellString(int i_Row, int i_Col)
         {
             char rowChar = (char)('A' + i_Row);
             char colChar = (char)('a' + i_Col);
+
             return $"{rowChar}{colChar}";
         }
 
@@ -328,7 +331,7 @@ namespace CheckersGame.UI
                     message = $"{winner.Name} Won!{Environment.NewLine}Another round?";
                 }
 
-                DialogResult userChoice = MessageBox.Show(message, @"Game Over", MessageBoxButtons.YesNo);
+                DialogResult userChoice = MessageBox.Show(message, "Game Over", MessageBoxButtons.YesNo);
 
                 handleEndGameDialogResult(userChoice);
             }
@@ -382,12 +385,6 @@ namespace CheckersGame.UI
             {
                 m_ComputerMoveTimer.Stop();
             }
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            base.OnFormClosing(e);
-            // אין Forfeit – פשוט סוגרים
         }
     }
 }
