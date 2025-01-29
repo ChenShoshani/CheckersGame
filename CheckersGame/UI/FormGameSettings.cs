@@ -34,9 +34,6 @@ namespace CheckersGame.UI
 
         private void initializeComponents()
         {
-            // 
-            // FormGameSettings
-            // 
             this.Text = "Game Settings";
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -44,86 +41,53 @@ namespace CheckersGame.UI
             this.MinimizeBox = false;
             this.ClientSize = new Size(260, 200);
 
-            // 
-            // m_LabelBoardSize
-            // 
             m_LabelBoardSize = new Label();
             m_LabelBoardSize.Text = "Board Size:";
             m_LabelBoardSize.Location = new Point(10, 10);
             m_LabelBoardSize.AutoSize = true;
 
-            // 
-            // m_RadioButtonSize6
-            // 
             m_RadioButtonSize6 = new RadioButton();
             m_RadioButtonSize6.Location = new Point(20, 35);
             m_RadioButtonSize6.Size = new Size(15, 15);
             m_RadioButtonSize6.Checked = true;
 
-            // 
-            // labelSize6
-            // 
             Label labelSize6 = new Label();
             labelSize6.Text = "6 x 6";
             labelSize6.Location = new Point(40, 32);
             labelSize6.AutoSize = true;
 
-            // 
-            // m_RadioButtonSize8
-            // 
             m_RadioButtonSize8 = new RadioButton();
             m_RadioButtonSize8.Location = new Point(80, 35);
             m_RadioButtonSize8.Size = new Size(15, 15);
 
-            // 
-            // labelSize8
-            // 
             Label labelSize8 = new Label();
             labelSize8.Text = "8 x 8";
             labelSize8.Location = new Point(100, 32);
             labelSize8.AutoSize = true;
 
-            // 
-            // m_RadioButtonSize10
-            // 
             m_RadioButtonSize10 = new RadioButton();
             m_RadioButtonSize10.Location = new Point(150, 35);
             m_RadioButtonSize10.Size = new Size(15, 15);
 
-            // 
-            // labelSize10
-            // 
             Label labelSize10 = new Label();
             labelSize10.Text = "10 x 10";
             labelSize10.Location = new Point(170, 32);
             labelSize10.AutoSize = true;
 
-            // 
-            // m_LabelPlayers
-            // 
             m_LabelPlayers = new Label();
             m_LabelPlayers.Text = "Players:";
             m_LabelPlayers.Location = new Point(10, 60);
             m_LabelPlayers.AutoSize = true;
 
-            // 
-            // m_LabelPlayer1
-            // 
             m_LabelPlayer1 = new Label();
             m_LabelPlayer1.Text = "Player 1:";
             m_LabelPlayer1.Location = new Point(20, 85);
             m_LabelPlayer1.AutoSize = true;
 
-            // 
-            // m_TextBoxPlayer1
-            // 
             m_TextBoxPlayer1 = new TextBox();
             m_TextBoxPlayer1.Location = new Point(100, 82);
             m_TextBoxPlayer1.Width = 140;
 
-            // 
-            // m_CheckBoxPlayer2
-            // 
             m_CheckBoxPlayer2 = new CheckBox();
             m_CheckBoxPlayer2.Text = "";
             m_CheckBoxPlayer2.Location = new Point(20, 115);
@@ -131,35 +95,23 @@ namespace CheckersGame.UI
             m_CheckBoxPlayer2.Size = new Size(15, 15);
             m_CheckBoxPlayer2.CheckedChanged += m_CheckBoxPlayer2_CheckedChanged;
 
-            // 
-            // m_LabelPlayer2
-            // 
             m_LabelPlayer2 = new Label();
             m_LabelPlayer2.Text = "Player 2:";
             m_LabelPlayer2.Location = new Point(40, 112);
             m_LabelPlayer2.AutoSize = true;
 
-            // 
-            // m_TextBoxPlayer2
-            // 
             m_TextBoxPlayer2 = new TextBox();
             m_TextBoxPlayer2.Location = new Point(100, 110);
             m_TextBoxPlayer2.Width = 140;
             m_TextBoxPlayer2.Text = "Computer";
             m_TextBoxPlayer2.Enabled = false;
 
-            // 
-            // m_ButtonDone
-            // 
             m_ButtonDone = new Button();
             m_ButtonDone.Text = "Done";
             m_ButtonDone.Location = new Point(150, 150);
             m_ButtonDone.Size = new Size(80, 30);
             m_ButtonDone.Click += buttonDone_Click;
-
-            // 
-            // Adding controls to form
-            // 
+ 
             this.Controls.Add(m_LabelBoardSize);
             this.Controls.Add(m_RadioButtonSize6);
             this.Controls.Add(labelSize6);
@@ -186,17 +138,13 @@ namespace CheckersGame.UI
         {
             determineBoardSize();
             collectPlayerDetails();
-            if (!validatePlayerNames())
+            bool isValidNames = validatePlayerNames();
+
+            if (isValidNames)
             {
-                return;
+                this.DialogResult = DialogResult.OK;
+                this.Close();
             }
-
-            GameController gameController = new GameController(BoardSize, Player1Name, Player2Name, IsAgainstComputer);
-            FormCheckersGame gameForm = new FormCheckersGame(gameController);
-
-            this.Hide();
-            gameForm.ShowDialog();
-            this.Close();
         }
 
         private void determineBoardSize()

@@ -59,7 +59,7 @@
     <Compile Include="UI\FormCheckersGame.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\GameUILauncher.cs" />
+    <Compile Include="UI\CheckersGameLauncher.cs" />
     <Compile Include="UI\FormGameSettings.cs">
       <SubType>Form</SubType>
     </Compile>

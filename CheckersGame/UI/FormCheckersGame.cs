@@ -107,6 +107,12 @@ namespace CheckersGame.UI
             updateBoardUI();
         }
 
+        private void updateScoresLabels()
+        {
+            m_LabelPlayer1.Text = $"{m_GameController.FirstPlayer.Name}: {m_GameController.FirstPlayer.Score}";
+            m_LabelPlayer2.Text = $"{m_GameController.SecondPlayer.Name}: {m_GameController.SecondPlayer.Score}";
+        }
+
         private void button_Click(object sender, EventArgs e)
         {
             handleButtonClick(sender);
@@ -165,24 +171,19 @@ namespace CheckersGame.UI
         private void handleSecondClick(int i_Row, int i_Col)
         {
             Point fromPos = (Point)m_SelectedButton.Tag;
+            bool isSameCell = fromPos.X == i_Row && fromPos.Y == i_Col;
 
-            if (fromPos.X == i_Row && fromPos.Y == i_Col)
-            {
-                resetSelectedButtonColor(fromPos);
-                m_IsPieceSelected = false;
-                m_SelectedButton = null;
-            }
-            else
+            if (!isSameCell)
             {
                 string fromCellStr = convertRowColToCellString(fromPos.X, fromPos.Y);
                 string toCellStr = convertRowColToCellString(i_Row, i_Col);
                 eMoveResult moveResult = m_GameController.MakeMove(fromCellStr, toCellStr);
-
                 handleMoveResult(moveResult);
-                resetSelectedButtonColor(fromPos);
-                m_IsPieceSelected = false;
-                m_SelectedButton = null;
             }
+
+            resetSelectedButtonColor(fromPos);
+            m_IsPieceSelected = false;
+            m_SelectedButton = null;
         }
 
         private void resetSelectedButtonColor(Point i_ButtonPosition)
@@ -196,7 +197,7 @@ namespace CheckersGame.UI
             }
         }
 
-        private Color getOriginalCellColor(int i_Row, int i_Col)
+        private static Color getOriginalCellColor(int i_Row, int i_Col)
         {
             Color originalColor;
 
@@ -248,12 +249,12 @@ namespace CheckersGame.UI
         {
             Player current = m_GameController.CurrentPlayer;
 
-            return (i_CellState == current.Symbol ||
-                   (i_CellState == eCellState.PlayerXKing && current.Symbol == eCellState.PlayerX) ||
+            return (i_CellState == current.Symbol || 
+                    (i_CellState == eCellState.PlayerXKing && current.Symbol == eCellState.PlayerX) ||
                    (i_CellState == eCellState.PlayerOKing && current.Symbol == eCellState.PlayerO));
         }
 
-        private Image pieceToImage(eCellState i_State)
+        private static Image pieceToImage(eCellState i_State)
         {
             Image result = null;
 
@@ -296,19 +297,11 @@ namespace CheckersGame.UI
 
                     m_ButtonsBoard[row, col].BackgroundImageLayout = ImageLayout.Stretch;
                     m_ButtonsBoard[row, col].BackgroundImage = pieceImage;
-                    m_ButtonsBoard[row, col].Text = string.Empty;
-
                 }
             }
         }
 
-        private void updateScoresLabels()
-        {
-            m_LabelPlayer1.Text = $"{m_GameController.FirstPlayer.Name}: {m_GameController.FirstPlayer.Score}";
-            m_LabelPlayer2.Text = $"{m_GameController.SecondPlayer.Name}: {m_GameController.SecondPlayer.Score}";
-        }
-
-        private string convertRowColToCellString(int i_Row, int i_Col)
+        private static string convertRowColToCellString(int i_Row, int i_Col)
         {
             char rowChar = (char)('A' + i_Row);
             char colChar = (char)('a' + i_Col);
