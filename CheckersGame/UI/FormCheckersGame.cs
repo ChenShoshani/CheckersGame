@@ -12,28 +12,28 @@ namespace CheckersGame.UI
         private Label m_LabelPlayer1;
         private Label m_LabelPlayer2;
         private Button[,] m_ButtonsBoard;
-        private GameController m_GameController;
+        private readonly GameController r_GameController;
         private bool m_IsPieceSelected = false;
         private Button m_SelectedButton = null;
-        private Timer m_ComputerMoveTimer;
+        private readonly Timer r_ComputerMoveTimer;
         private bool m_IsComputerMoveInProgress = false;
 
         public FormCheckersGame(GameController i_GameController)
         {
-            m_GameController = i_GameController;
+            r_GameController = i_GameController;
             initializeComponents();
             initializeBoard();
             updateScoresLabels();
-            m_ComputerMoveTimer = new Timer();
-            m_ComputerMoveTimer.Interval = 1000;
-            m_ComputerMoveTimer.Tick += m_ComputerMoveTimer_Tick;
+            r_ComputerMoveTimer = new Timer();
+            r_ComputerMoveTimer.Interval = 1000;
+            r_ComputerMoveTimer.Tick += r_ComputerMoveTimer_Tick;
         }
 
         private void initializeComponents()
         {
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Checkers Game";
-            this.MaximizeBox = false; 
+            this.MaximizeBox = false;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             m_LabelPlayer1 = new Label();
             m_LabelPlayer1.AutoSize = true;
@@ -48,15 +48,15 @@ namespace CheckersGame.UI
 
         private void updatePlayerLabelsPosition()
         {
-            int boardSize = m_GameController.Board.Size; 
-            int boardWidthInPixels = boardSize * k_ButtonSize; 
+            int boardSize = r_GameController.Board.Size;
+            int boardWidthInPixels = boardSize * k_ButtonSize;
             int formWidth = boardWidthInPixels + 40;
 
             this.ClientSize = new Size(formWidth, this.ClientSize.Height);
-            m_LabelPlayer1.Text = $"{m_GameController.FirstPlayer.Name}: {m_GameController.FirstPlayer.Score}";
-            m_LabelPlayer2.Text = $"{m_GameController.SecondPlayer.Name}: {m_GameController.SecondPlayer.Score}";
-            int player1LabelX = (formWidth / 4) - (m_LabelPlayer1.Width / 2); 
-            int player2LabelX = (3 * formWidth / 4) - (m_LabelPlayer2.Width / 2); 
+            m_LabelPlayer1.Text = $"{r_GameController.FirstPlayer.Name}: {r_GameController.FirstPlayer.Score}";
+            m_LabelPlayer2.Text = $"{r_GameController.SecondPlayer.Name}: {r_GameController.SecondPlayer.Score}";
+            int player1LabelX = (formWidth / 4) - (m_LabelPlayer1.Width / 2);
+            int player2LabelX = (3 * formWidth / 4) - (m_LabelPlayer2.Width / 2);
 
             m_LabelPlayer1.Location = new Point(player1LabelX, 10);
             m_LabelPlayer2.Location = new Point(player2LabelX, 10);
@@ -64,12 +64,11 @@ namespace CheckersGame.UI
 
         private void initializeBoard()
         {
-            int boardSize = m_GameController.Board.Size;
+            const int k_TopOffset = 40;
+            const int k_LeftOffset = 10;
+            int boardSize = r_GameController.Board.Size;
+
             m_ButtonsBoard = new Button[boardSize, boardSize];
-
-            int topOffset = 40;
-            int leftOffset = 10;
-
             for (int row = 0; row < boardSize; row++)
             {
                 for (int col = 0; col < boardSize; col++)
@@ -81,10 +80,9 @@ namespace CheckersGame.UI
                     button.FlatStyle = FlatStyle.Flat;
                     button.FlatAppearance.BorderSize = 0;
                     button.Size = new Size(k_ButtonSize, k_ButtonSize);
-                    button.Location = new Point(leftOffset + col * k_ButtonSize, topOffset + row * k_ButtonSize);
+                    button.Location = new Point(k_LeftOffset + col * k_ButtonSize, k_TopOffset + row * k_ButtonSize);
                     button.Tag = new Point(row, col);
                     button.Click += button_Click;
-
                     if ((row + col) % 2 == 0)
                     {
                         button.BackColor = Color.FromArgb(220, 220, 220);
@@ -102,40 +100,80 @@ namespace CheckersGame.UI
 
             int formWidth = boardSize * k_ButtonSize + 40;
             int formHeight = boardSize * k_ButtonSize + 80;
-            this.ClientSize = new Size(formWidth, formHeight);
 
+            this.ClientSize = new Size(formWidth, formHeight);
             updateBoardUI();
+        }
+
+        private static Image pieceToImage(eCellState i_State) 
+        {
+            Image result;
+
+            switch (i_State)
+            {
+                case eCellState.PlayerX:
+                    result = Resources.blackpiece;
+                    break;
+                case eCellState.PlayerXKing:
+                    result = Resources.blackpieceking;
+                    break;
+                case eCellState.PlayerO:
+                    result = Resources.redpiece;
+                    break;
+                case eCellState.PlayerOKing:
+                    result = Resources.redpieceking;
+                    break;
+                case eCellState.Empty:
+                default:
+                    result = null;
+                    break;
+            }
+
+            return result;
+        }
+
+        private void updateBoardUI() 
+        {
+            int boardSize = r_GameController.Board.Size;
+
+            for (int row = 0; row < boardSize; row++)
+            {
+                for (int col = 0; col < boardSize; col++)
+                {
+                    eCellState cellState = r_GameController.Board.GetCellState(row, col);
+                    Image pieceImage = pieceToImage(cellState);
+
+                    m_ButtonsBoard[row, col].BackgroundImageLayout = ImageLayout.Stretch;
+                    m_ButtonsBoard[row, col].BackgroundImage = pieceImage;
+                }
+            }
         }
 
         private void updateScoresLabels()
         {
-            m_LabelPlayer1.Text = $"{m_GameController.FirstPlayer.Name}: {m_GameController.FirstPlayer.Score}";
-            m_LabelPlayer2.Text = $"{m_GameController.SecondPlayer.Name}: {m_GameController.SecondPlayer.Score}";
+            m_LabelPlayer1.Text = $"{r_GameController.FirstPlayer.Name}: {r_GameController.FirstPlayer.Score}";
+            m_LabelPlayer2.Text = $"{r_GameController.SecondPlayer.Name}: {r_GameController.SecondPlayer.Score}";
         }
 
         private void button_Click(object sender, EventArgs e)
         {
-            handleButtonClick(sender);
+            Button theSender = sender as Button;
+
+            handleButtonClick(theSender);
         }
 
-        private void handleButtonClick(object sender)
+        private void handleButtonClick(Button i_ClickedButton)
         {
-            bool isCanContinue = true;
-            Button clickedButton = sender as Button;
+            bool isCanContinue = i_ClickedButton != null;
 
-            if (clickedButton == null)
-            {
-                isCanContinue = false;
-            }
-
-            if (isCanContinue && m_GameController.IsComputerPlayer(m_GameController.CurrentPlayer))
+            if (isCanContinue && r_GameController.IsComputerPlayer(r_GameController.CurrentPlayer))
             {
                 isCanContinue = false;
             }
 
             if (isCanContinue)
             {
-                handleValidButtonClick(clickedButton);
+                handleValidButtonClick(i_ClickedButton);
             }
         }
 
@@ -144,8 +182,7 @@ namespace CheckersGame.UI
             Point position = (Point)i_ClickedButton.Tag;
             int row = position.X;
             int col = position.Y;
-
-            eCellState cellState = m_GameController.Board.GetCellState(row, col);
+            eCellState cellState = r_GameController.Board.GetCellState(row, col);
 
             if (!m_IsPieceSelected)
             {
@@ -153,11 +190,11 @@ namespace CheckersGame.UI
             }
             else
             {
-                handleSecondClick(row, col);
+                handleSecondClick(i_ClickedButton);
             }
         }
 
-        private void handleFirstClick(Button i_ClickedButton, eCellState i_CellState)
+        private void handleFirstClick(Button i_ClickedButton, eCellState i_CellState) 
         {
             if (isCellBelongToCurrentPlayer(i_CellState))
             {
@@ -168,49 +205,41 @@ namespace CheckersGame.UI
             }
         }
 
-        private void handleSecondClick(int i_Row, int i_Col)
+        private bool isCellBelongToCurrentPlayer(eCellState i_CellState) 
         {
+            Player current = r_GameController.CurrentPlayer;
+
+            return (i_CellState == current.Symbol ||
+                    (i_CellState == eCellState.PlayerXKing && current.Symbol == eCellState.PlayerX) ||
+                    (i_CellState == eCellState.PlayerOKing && current.Symbol == eCellState.PlayerO));
+        }
+
+        private void handleSecondClick(Button i_ClickedButton)
+        {
+            Point toPos = (Point)i_ClickedButton.Tag; 
             Point fromPos = (Point)m_SelectedButton.Tag;
-            bool isSameCell = fromPos.X == i_Row && fromPos.Y == i_Col;
+            bool isSameCell = fromPos == toPos; 
 
             if (!isSameCell)
             {
                 string fromCellStr = convertRowColToCellString(fromPos.X, fromPos.Y);
-                string toCellStr = convertRowColToCellString(i_Row, i_Col);
-                eMoveResult moveResult = m_GameController.MakeMove(fromCellStr, toCellStr);
+                string toCellStr = convertRowColToCellString(toPos.X, toPos.Y);
+                eMoveResult moveResult = r_GameController.MakeMove(fromCellStr, toCellStr);
+
                 handleMoveResult(moveResult);
             }
 
-            resetSelectedButtonColor(fromPos);
+            m_SelectedButton.BackColor = Color.FromArgb(50, 50, 50);
             m_IsPieceSelected = false;
             m_SelectedButton = null;
         }
 
-        private void resetSelectedButtonColor(Point i_ButtonPosition)
+        private static string convertRowColToCellString(int i_Row, int i_Col)
         {
-            int row = i_ButtonPosition.X;
-            int col = i_ButtonPosition.Y;
+            char rowChar = (char)('A' + i_Row);
+            char colChar = (char)('a' + i_Col);
 
-            if (m_SelectedButton != null)
-            {
-                m_SelectedButton.BackColor = getOriginalCellColor(row, col);
-            }
-        }
-
-        private static Color getOriginalCellColor(int i_Row, int i_Col)
-        {
-            Color originalColor;
-
-            if ((i_Row + i_Col) % 2 == 0)
-            {
-                originalColor = Color.FromArgb(220, 220, 220);
-            }
-            else
-            {
-                originalColor = Color.FromArgb(50, 50, 50);
-            }
-
-            return originalColor;
+            return $"{rowChar}{colChar}";
         }
 
         private void handleMoveResult(eMoveResult i_Result)
@@ -234,84 +263,53 @@ namespace CheckersGame.UI
                     break;
                 case eMoveResult.Success:
                     updateBoardUI();
-                    checkGameOver();
-                    if (!m_GameController.IsGameOver(out Player ignoreWinner)
-                        && m_GameController.IsComputerPlayer(m_GameController.CurrentPlayer))
-                    {
-                        m_IsComputerMoveInProgress = true;
-                        m_ComputerMoveTimer.Start();
-                    }
+                    checkGameOverAndHandleComputerTurn(); 
                     break;
             }
         }
 
-        private bool isCellBelongToCurrentPlayer(eCellState i_CellState)
+        private void checkGameOverAndHandleComputerTurn()
         {
-            Player current = m_GameController.CurrentPlayer;
-
-            return (i_CellState == current.Symbol || 
-                    (i_CellState == eCellState.PlayerXKing && current.Symbol == eCellState.PlayerX) ||
-                   (i_CellState == eCellState.PlayerOKing && current.Symbol == eCellState.PlayerO));
-        }
-
-        private static Image pieceToImage(eCellState i_State)
-        {
-            Image result = null;
-
-            switch (i_State)
+            checkGameOver();
+            if (r_GameController.IsComputerPlayer(r_GameController.CurrentPlayer))
             {
-                case eCellState.PlayerX:
-                    result = Resources.blackpiece;
-                    break;
-
-                case eCellState.PlayerXKing:
-                    result = Resources.blackpieceking;
-                    break;
-
-                case eCellState.PlayerO:
-                    result = Resources.redpiece;
-                    break;
-
-                case eCellState.PlayerOKing:
-                    result = Resources.redpieceking;
-                    break;
-
-                default:
-                    result = null;
-                    break;
+                m_IsComputerMoveInProgress = true;
+                r_ComputerMoveTimer.Start();
             }
-
-            return result;
         }
 
-        private void updateBoardUI()
+        private void r_ComputerMoveTimer_Tick(object sender, EventArgs e)
         {
-            int boardSize = m_GameController.Board.Size;
+            bool isStopTimer = !m_IsComputerMoveInProgress;
 
-            for (int row = 0; row < boardSize; row++)
+            if (!isStopTimer)
             {
-                for (int col = 0; col < boardSize; col++)
+                r_GameController.MakeComputerMove();
+                updateBoardUI();
+
+                if (r_GameController.IsGameOver(out Player winner))
                 {
-                    eCellState cellState = m_GameController.Board.GetCellState(row, col);
-                    Image pieceImage = pieceToImage(cellState);
+                    isStopTimer = true;
 
-                    m_ButtonsBoard[row, col].BackgroundImageLayout = ImageLayout.Stretch;
-                    m_ButtonsBoard[row, col].BackgroundImage = pieceImage;
+                    m_IsComputerMoveInProgress = false;
+                    checkGameOver();
+                }
+                else if (!r_GameController.IsComputerPlayer(r_GameController.CurrentPlayer))
+                {
+                    isStopTimer = true;
+                    m_IsComputerMoveInProgress = false;
                 }
             }
-        }
 
-        private static string convertRowColToCellString(int i_Row, int i_Col)
-        {
-            char rowChar = (char)('A' + i_Row);
-            char colChar = (char)('a' + i_Col);
-
-            return $"{rowChar}{colChar}";
+            if (isStopTimer)
+            {
+                r_ComputerMoveTimer.Stop();
+            }
         }
 
         private void checkGameOver()
         {
-            if (m_GameController.IsGameOver(out Player winner))
+            if (r_GameController.IsGameOver(out Player winner))
             {
                 string message;
 
@@ -334,7 +332,7 @@ namespace CheckersGame.UI
         {
             if (i_Result == DialogResult.Yes)
             {
-                m_GameController.ResetGame(m_GameController.Board.Size);
+                r_GameController.ResetGame(r_GameController.Board.Size);
                 updateBoardUI();
                 updateScoresLabels();
             }
@@ -343,41 +341,6 @@ namespace CheckersGame.UI
                 this.Close();
             }
         }
-
-        private void m_ComputerMoveTimer_Tick(object sender, EventArgs e)
-        {
-            bool isStopTimer = false;
-
-            if (!m_IsComputerMoveInProgress)
-            {
-                isStopTimer = true;
-            }
-            else
-            {
-                eMoveResult moveResult = m_GameController.MakeComputerMove();
-                updateBoardUI();
-
-                if (moveResult == eMoveResult.AdditionalCaptureRequired)
-                {
-                    isStopTimer = false;
-                }
-                else if (m_GameController.IsGameOver(out Player winner))
-                {
-                    isStopTimer = true;
-                    m_IsComputerMoveInProgress = false;
-                    checkGameOver();
-                }
-                else if (!m_GameController.IsComputerPlayer(m_GameController.CurrentPlayer))
-                {
-                    isStopTimer = true;
-                    m_IsComputerMoveInProgress = false;
-                }
-            }
-
-            if (isStopTimer)
-            {
-                m_ComputerMoveTimer.Stop();
-            }
-        }
     }
+
 }

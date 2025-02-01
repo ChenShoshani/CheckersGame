@@ -322,8 +322,7 @@ namespace CheckersGame.Logic
         {
             eMoveResult result = eMoveResult.InvalidFormat;
 
-            if (parseBoardPosition(i_From, out int fromRow, out int fromCol) &&
-                parseBoardPosition(i_To, out int toRow, out int toCol))
+            if (parseBoardPosition(i_From, out int fromRow, out int fromCol) && parseBoardPosition(i_To, out int toRow, out int toCol))
             {
                 result = eMoveResult.InvalidMove;
                 bool isInChain = false;
@@ -331,7 +330,8 @@ namespace CheckersGame.Logic
                 if (m_LastMove != null)
                 {
                     int lastRowDiff = Math.Abs(m_LastMove.FromRow - m_LastMove.ToRow);
-                    if (lastRowDiff == 2) 
+
+                    if (lastRowDiff == 2)
                     {
                         isInChain = true;
                     }
@@ -346,48 +346,55 @@ namespace CheckersGame.Logic
 
                 bool isSkipFurtherChecks = false;
                 bool isValidRegular = isValidMove(fromRow, fromCol, toRow, toCol);
-                bool isJumpValid = isValidJump(fromRow, fromCol, (fromRow + toRow) / 2, 
-                    (fromCol + toCol) / 2, toRow, toCol);
+                bool isJumpValid = isValidJump(fromRow, fromCol, (fromRow + toRow) / 2, (fromCol + toCol) / 2, toRow, toCol);
                 bool isLegal = (isValidRegular || isJumpValid);
 
-                if (isInChain && isPickedDifferentPiece)
+                if (isInChain && isPickedDifferentPiece) 
                 {
                     result = !isLegal ? eMoveResult.InvalidMove : eMoveResult.MustCaptureAgain;
-
                     isSkipFurtherChecks = true;
                 }
 
-                if (!isSkipFurtherChecks)
+                if (!isSkipFurtherChecks) 
                 {
-                    if (!isLegal)
+                    result = validateAndExecutionMove(isLegal, isInChain, fromRow, fromCol, toRow, toCol);
+                }
+            }
+
+            return result;
+        }
+
+        private eMoveResult validateAndExecutionMove(bool i_IsLegal, bool i_IsInChain, int i_FromRow, int i_FromCol, int i_ToRow, int i_ToCol)
+        {
+            eMoveResult result;
+
+            if (!i_IsLegal)
+            {
+                result = eMoveResult.InvalidMove;
+            }
+            else
+            {
+                bool isMustCapture = PlayerMustCapture(m_CurrentPlayer);
+                int rowDiff = Math.Abs(i_FromRow - i_ToRow);
+
+                if (isMustCapture && rowDiff != 2)
+                {
+                    result = i_IsInChain ? eMoveResult.MustCaptureAgain : eMoveResult.MustCapture;
+                }
+                else
+                {
+                    executeMove(i_FromRow, i_FromCol, i_ToRow, i_ToCol);
+                    m_LastMove = new Move(i_FromRow, i_FromCol, i_ToRow, i_ToCol);
+                    if (rowDiff == 2 && HasMoreJumps(i_ToRow, i_ToCol))
                     {
-                        result = eMoveResult.InvalidMove;
+                        result = eMoveResult.AdditionalCaptureRequired;
                     }
                     else
                     {
-                        bool isMustCapture = PlayerMustCapture(m_CurrentPlayer);
-                        int rowDiff = Math.Abs(fromRow - toRow);
-
-                        if (isMustCapture && rowDiff != 2)
-                        {
-                            result = isInChain ? eMoveResult.MustCaptureAgain : eMoveResult.MustCapture;
-                        }
-                        else
-                        {
-                            executeMove(fromRow, fromCol, toRow, toCol);
-                            m_LastMove = new Move(fromRow, fromCol, toRow, toCol);
-                            if (rowDiff == 2 && HasMoreJumps(toRow, toCol))
-                            {
-                                result = eMoveResult.AdditionalCaptureRequired;
-                            }
-                            else
-                            {
-                                m_PreviousMove = m_LastMove;
-                                m_LastMove = null;
-                                switchTurns();
-                                result = eMoveResult.Success;
-                            }
-                        }
+                        m_PreviousMove = m_LastMove;
+                        m_LastMove = null;
+                        switchTurns();
+                        result = eMoveResult.Success;
                     }
                 }
             }
@@ -460,9 +467,9 @@ namespace CheckersGame.Logic
         public bool IsGameOver(out Player o_Winner)
         {
             bool isGameOver = false;
-            o_Winner = null;
 
-            if (IsKingVsKingOnly())
+            o_Winner = null;
+            if (IsKingVsKingOnly()) 
             {
                 isGameOver = true;
             }
@@ -473,23 +480,29 @@ namespace CheckersGame.Logic
 
                 if (player1Moves.Count == 0 && player2Moves.Count == 0)
                 {
-                    isGameOver = true;
+                    isGameOver = true; 
                 }
-                else if (player1Moves.Count == 0)
+                else if (player1Moves.Count == 0) 
                 {
-                    o_Winner = r_SecondPlayer;
-                    calculateAndAddScore(r_SecondPlayer, r_FirstPlayer);
-                    isGameOver = true;
+                    if (!PlayerMustCapture(r_SecondPlayer)) 
+                    {
+                        o_Winner = r_SecondPlayer;
+                        calculateAndAddScore(r_SecondPlayer, r_FirstPlayer);
+                        isGameOver = true;
+                    }
                 }
-                else if (player2Moves.Count == 0)
+                else if (player2Moves.Count == 0) 
                 {
-                    o_Winner = r_FirstPlayer;
-                    calculateAndAddScore(r_FirstPlayer, r_SecondPlayer);
-                    isGameOver = true;
+                    if (!PlayerMustCapture(r_FirstPlayer)) 
+                    {
+                        o_Winner = r_FirstPlayer;
+                        calculateAndAddScore(r_FirstPlayer, r_SecondPlayer);
+                        isGameOver = true;
+                    }
                 }
             }
 
-            return isGameOver;
+            return isGameOver; 
         }
 
         public void ResetGame(int i_BoardSize)
