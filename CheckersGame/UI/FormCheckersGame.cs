@@ -105,7 +105,7 @@ namespace CheckersGame.UI
             updateBoardUI();
         }
 
-        private static Image pieceToImage(eCellState i_State) 
+        private static Image pieceToImage(eCellState i_State)
         {
             Image result;
 
@@ -132,7 +132,7 @@ namespace CheckersGame.UI
             return result;
         }
 
-        private void updateBoardUI() 
+        private void updateBoardUI()
         {
             int boardSize = r_GameController.Board.Size;
 
@@ -194,7 +194,7 @@ namespace CheckersGame.UI
             }
         }
 
-        private void handleFirstClick(Button i_ClickedButton, eCellState i_CellState) 
+        private void handleFirstClick(Button i_ClickedButton, eCellState i_CellState)
         {
             if (isCellBelongToCurrentPlayer(i_CellState))
             {
@@ -205,7 +205,7 @@ namespace CheckersGame.UI
             }
         }
 
-        private bool isCellBelongToCurrentPlayer(eCellState i_CellState) 
+        private bool isCellBelongToCurrentPlayer(eCellState i_CellState)
         {
             Player current = r_GameController.CurrentPlayer;
 
@@ -216,9 +216,9 @@ namespace CheckersGame.UI
 
         private void handleSecondClick(Button i_ClickedButton)
         {
-            Point toPos = (Point)i_ClickedButton.Tag; 
+            Point toPos = (Point)i_ClickedButton.Tag;
             Point fromPos = (Point)m_SelectedButton.Tag;
-            bool isSameCell = fromPos == toPos; 
+            bool isSameCell = fromPos == toPos;
 
             if (!isSameCell)
             {
@@ -263,18 +263,24 @@ namespace CheckersGame.UI
                     break;
                 case eMoveResult.Success:
                     updateBoardUI();
-                    checkGameOverAndHandleComputerTurn(); 
+                    checkGameOverAndHandleComputerTurn();
                     break;
             }
         }
 
         private void checkGameOverAndHandleComputerTurn()
         {
-            checkGameOver();
-            if (r_GameController.IsComputerPlayer(r_GameController.CurrentPlayer))
+            if(r_GameController.IsGameOver(out Player winner))
             {
-                m_IsComputerMoveInProgress = true;
-                r_ComputerMoveTimer.Start();
+                displayGameOverMessage(winner);
+            }
+            else
+            {
+                if (r_GameController.IsComputerPlayer(r_GameController.CurrentPlayer))
+                {
+                    m_IsComputerMoveInProgress = true;
+                    r_ComputerMoveTimer.Start();
+                }
             }
         }
 
@@ -286,18 +292,15 @@ namespace CheckersGame.UI
             {
                 r_GameController.MakeComputerMove();
                 updateBoardUI();
-
-                if (r_GameController.IsGameOver(out Player winner))
+                if (r_GameController.IsGameOver(out Player winner) || !r_GameController.IsComputerPlayer(r_GameController.CurrentPlayer))
                 {
                     isStopTimer = true;
 
                     m_IsComputerMoveInProgress = false;
-                    checkGameOver();
-                }
-                else if (!r_GameController.IsComputerPlayer(r_GameController.CurrentPlayer))
-                {
-                    isStopTimer = true;
-                    m_IsComputerMoveInProgress = false;
+                    if (r_GameController.IsGameOver(out winner))
+                    {
+                        displayGameOverMessage(winner);
+                    }
                 }
             }
 
@@ -307,25 +310,22 @@ namespace CheckersGame.UI
             }
         }
 
-        private void checkGameOver()
+        private void displayGameOverMessage(Player i_Winner)
         {
-            if (r_GameController.IsGameOver(out Player winner))
+            string message;
+
+            if (i_Winner == null)
             {
-                string message;
-
-                if (winner == null)
-                {
-                    message = $"Tie!{Environment.NewLine}Another round?";
-                }
-                else
-                {
-                    message = $"{winner.Name} Won!{Environment.NewLine}Another round?";
-                }
-
-                DialogResult userChoice = MessageBox.Show(message, "Game Over", MessageBoxButtons.YesNo);
-
-                handleEndGameDialogResult(userChoice);
+                message = $"Tie!{Environment.NewLine}Another round?";
             }
+            else
+            {
+                message = $"{i_Winner.Name} Won!{Environment.NewLine}Another round?";
+            }
+
+            DialogResult userChoice = MessageBox.Show(message, "Game Over", MessageBoxButtons.YesNo);
+
+            handleEndGameDialogResult(userChoice);
         }
 
         private void handleEndGameDialogResult(DialogResult i_Result)

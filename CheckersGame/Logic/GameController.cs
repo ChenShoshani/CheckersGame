@@ -13,7 +13,7 @@ namespace CheckersGame.Logic
         private bool m_IsForfeit;
         private Move m_LastMove;
         private Move m_PreviousMove;
-        private Random m_Random = new Random();
+        private readonly Random r_Random = new Random();
 
         public GameController(int i_BoardSize, string i_Player1Name, string i_Player2Name, bool i_IsVsComputer)
         {
@@ -102,7 +102,7 @@ namespace CheckersGame.Logic
             return isValid;
         }
 
-        private eCellState convertToKingSymbol(eCellState i_PlayerSymbol)
+        private static eCellState convertToKingSymbol(eCellState i_PlayerSymbol)
         {
             eCellState kingSymbol = eCellState.Empty;
 
@@ -118,9 +118,9 @@ namespace CheckersGame.Logic
             return kingSymbol;
         }
 
-        private bool isOpponentPiece(eCellState i_MidPiece, eCellState i_CurrentPlayerPiece)
+        private static bool isOpponentPiece(eCellState i_MidPiece, eCellState i_CurrentPlayerPiece)
         {
-            bool result = false;
+            bool isMidPieceOpponent = false;
 
             if (i_MidPiece != eCellState.Empty)
             {
@@ -128,15 +128,15 @@ namespace CheckersGame.Logic
                 bool isMidPieceO = i_MidPiece == eCellState.PlayerO || i_MidPiece == eCellState.PlayerOKing;
                 bool isCurrentPlayerO = i_CurrentPlayerPiece == eCellState.PlayerO || i_CurrentPlayerPiece == eCellState.PlayerOKing;
                 bool isMidPieceX = i_MidPiece == eCellState.PlayerX || i_MidPiece == eCellState.PlayerXKing;
-                result = (isCurrentPlayerX && isMidPieceO) || (isCurrentPlayerO && isMidPieceX);
+                isMidPieceOpponent  = (isCurrentPlayerX && isMidPieceO) || (isCurrentPlayerO && isMidPieceX);
             }
 
-            return result;
+            return isMidPieceOpponent ;
         }
 
         private bool isValidJump(int i_FromRow, int i_FromCol, int i_MidRow, int i_MidCol, int i_ToRow, int i_ToCol)
         {
-            bool result = false;
+            bool isJumpValid = false;
 
             if (m_Board.ValidatePosition(i_MidRow, i_MidCol) && m_Board.ValidatePosition(i_ToRow, i_ToCol))
             {
@@ -152,12 +152,12 @@ namespace CheckersGame.Logic
                         (movingPiece == eCellState.PlayerX && i_ToRow < i_FromRow) ||
                         (movingPiece == eCellState.PlayerO && i_ToRow > i_FromRow))
                     {
-                        result = true;
+                        isJumpValid = true;
                     }
                 }
             }
 
-            return result;
+            return isJumpValid;
         }
 
         private List<Move> getCaptureMovesFromPiece(int i_Row, int i_Col)
@@ -410,7 +410,7 @@ namespace CheckersGame.Logic
 
             if (validMoves.Count > 0)
             {
-                Move move = validMoves[m_Random.Next(validMoves.Count)];
+                Move move = validMoves[r_Random.Next(validMoves.Count)];
                 string fromPosition = $"{(char)('A' + move.FromRow)}{(char)('a' + move.FromCol)}";
                 string toPosition = $"{(char)('A' + move.ToRow)}{(char)('a' + move.ToCol)}";
 
