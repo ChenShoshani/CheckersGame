@@ -49,10 +49,31 @@
 
         private void initializeBoard()
         {
-            r_Board[1, 2] = eCellState.PlayerO;
-            r_Board[0, 3] = eCellState.PlayerO;
-            r_Board[1, 0] = eCellState.PlayerO;
-            r_Board[3, 0] = eCellState.PlayerX;
+            for (int row = 0; row < Size; row++)
+            {
+                for (int col = 0; col < Size; col++)
+                {
+                    if ((row + col) % 2 != 0)
+                    {
+                        if (row < r_UpperRegionEnd)
+                        {
+                            r_Board[row, col] = eCellState.PlayerO;
+                        }
+                        else if (row >= r_LowerRegionStart)
+                        {
+                            r_Board[row, col] = eCellState.PlayerX;
+                        }
+                        else
+                        {
+                            r_Board[row, col] = eCellState.Empty;
+                        }
+                    }
+                    else
+                    {
+                        r_Board[row, col] = eCellState.Empty;
+                    }
+                }
+            }
         }
 
         public eCellState GetCellState(int i_Row, int i_Col)
