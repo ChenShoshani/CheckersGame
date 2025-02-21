@@ -17,6 +17,9 @@ It also incorporates **event-driven programming** to dynamically manage user int
 
 ## 🖥️ Game Preview 🎥  
 
+![image](https://github.com/user-attachments/assets/b70e5eab-9458-4fdf-bb27-d08821cb416f)
+
+
 ![Project Screenshot](https://github.com/user-attachments/assets/69482bff-0a9c-43ce-9534-f3e318f66142) 
 
 ---
