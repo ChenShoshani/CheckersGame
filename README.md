@@ -1,4 +1,7 @@
-# 🎮 CheckersGame  
+# 🎮 CheckersGame                     
+![image](https://github.com/user-attachments/assets/5c77e901-79a7-41f0-a952-262adba8fe65)   ![image](https://github.com/user-attachments/assets/84ce3329-681d-4c44-b803-48e9017c3792)
+
+
 📌 *"A visually enhanced Checkers game – Play solo against a computer opponent or challenge a friend!"*  
 
 ## 📜 Overview  
@@ -42,7 +45,7 @@ Follow these steps to set up and run the game on your local machine:
 - **.NET Framework** 
 
 ### 📌 Installation Steps  
-
+1️⃣ Option 1: Clone from GitHub
 1. **Clone the repository:**  
    Open a terminal or command prompt and run:  
    ```bash
@@ -56,4 +59,22 @@ Build and Run the project:
 
 Click on the Start (▶️) button in Visual Studio, or
 Press F5 to run the game in Debug mode.
+
+2️⃣	 Option 2: Download as ZIP(No Git Required)
+Download the Project
+
+Go to the GitHub Repository
+Click the 🔽 Code button.
+Select Download ZIP and wait for the download to complete.
+
+Extract the Files
+
+Locate the downloaded .zip file
+Right-click the file and choose Extract All.
+Open the sln file in Visual Studio.
+
+
+Run the Game
+
+Click the Start (▶️) button in Visual Studio.
 🚀 You're now ready to play Checkers!
