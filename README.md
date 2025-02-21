@@ -5,10 +5,10 @@
 This project was developed as part of an **Object-Oriented Programming (OOP)** course using the **.NET Framework and C#**.  
 It demonstrates key OOP principles such as:  
 
-♟️ **Encapsulation**  
-♟️ **Abstraction**  
-♟️ **Composition**  
-♟️ **Code Reuse**  
+1️⃣ **Encapsulation**  
+2️⃣ **Abstraction**  
+3️⃣ **Composition**  
+4️⃣ **Code Reuse**  
 
 Designed with a **modular architecture**, this project ensures **secure data handling** and **efficient code organization**.  
 It also incorporates **event-driven programming** to dynamically manage user interactions, showcasing best practices in OOP.  
