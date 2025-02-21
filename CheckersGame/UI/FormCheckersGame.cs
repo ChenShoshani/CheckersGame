@@ -342,5 +342,4 @@ namespace CheckersGame.UI
             }
         }
     }
-
 }

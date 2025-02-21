@@ -466,43 +466,25 @@ namespace CheckersGame.Logic
 
         public bool IsGameOver(out Player o_Winner)
         {
-            bool isGameOver = false;
-
             o_Winner = null;
-            if (IsKingVsKingOnly()) 
-            {
-                isGameOver = true;
-            }
-            else
-            {
-                List<Move> player1Moves = getValidMovesForPlayer(r_FirstPlayer);
-                List<Move> player2Moves = getValidMovesForPlayer(r_SecondPlayer);
 
-                if (player1Moves.Count == 0 && player2Moves.Count == 0)
-                {
-                    isGameOver = true; 
-                }
-                else if (player1Moves.Count == 0) 
-                {
-                    if (!PlayerMustCapture(r_SecondPlayer)) 
-                    {
-                        o_Winner = r_SecondPlayer;
-                        calculateAndAddScore(r_SecondPlayer, r_FirstPlayer);
-                        isGameOver = true;
-                    }
-                }
-                else if (player2Moves.Count == 0) 
-                {
-                    if (!PlayerMustCapture(r_FirstPlayer)) 
-                    {
-                        o_Winner = r_FirstPlayer;
-                        calculateAndAddScore(r_FirstPlayer, r_SecondPlayer);
-                        isGameOver = true;
-                    }
-                }
+            // אם נשארו רק מלכים במשחק, נגמר בתיקו
+            if (IsKingVsKingOnly())
+            {
+                return true;
             }
 
-            return isGameOver; 
+            // בדוק מהלכים חוקיים רק לשחקן הנוכחי
+            List<Move> currentPlayerMoves = getValidMovesForPlayer(m_CurrentPlayer);
+
+            if (currentPlayerMoves.Count == 0) // אין לו מהלכים חוקיים => הפסיד
+            {
+                o_Winner = (m_CurrentPlayer == r_FirstPlayer) ? r_SecondPlayer : r_FirstPlayer;
+                calculateAndAddScore(o_Winner, m_CurrentPlayer);
+                return true;
+            }
+
+            return false;
         }
 
         public void ResetGame(int i_BoardSize)
