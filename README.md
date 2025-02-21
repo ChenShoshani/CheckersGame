@@ -36,7 +36,7 @@ Follow these steps to set up and run the game on your local machine:
 
 ### 🛠️ Prerequisites  
 - **Visual Studio** (2022 recommended)  
-- **.NET Framework** (Ensure the required version is installed)  
+- **.NET Framework** 
 
 ### 📌 Installation Steps  
 
