@@ -77,4 +77,5 @@ Open the sln file in Visual Studio.
 Run the Game
 
 Click the Start (▶️) button in Visual Studio.
+
 🚀 You're now ready to play Checkers!
