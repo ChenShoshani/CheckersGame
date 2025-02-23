@@ -270,7 +270,7 @@ namespace CheckersGame.UI
 
         private void checkGameOverAndHandleComputerTurn()
         {
-            if(r_GameController.IsGameOver(out Player winner))
+            if (r_GameController.IsGameOver(out Player winner))
             {
                 displayGameOverMessage(winner);
             }

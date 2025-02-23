@@ -110,7 +110,7 @@ namespace CheckersGame.UI
             m_ButtonDone.Location = new Point(150, 150);
             m_ButtonDone.Size = new Size(80, 30);
             m_ButtonDone.Click += buttonDone_Click;
- 
+
             this.Controls.Add(m_LabelBoardSize);
             this.Controls.Add(m_RadioButtonSize6);
             this.Controls.Add(labelSize6);

@@ -128,10 +128,10 @@ namespace CheckersGame.Logic
                 bool isMidPieceO = i_MidPiece == eCellState.PlayerO || i_MidPiece == eCellState.PlayerOKing;
                 bool isCurrentPlayerO = i_CurrentPlayerPiece == eCellState.PlayerO || i_CurrentPlayerPiece == eCellState.PlayerOKing;
                 bool isMidPieceX = i_MidPiece == eCellState.PlayerX || i_MidPiece == eCellState.PlayerXKing;
-                isMidPieceOpponent  = (isCurrentPlayerX && isMidPieceO) || (isCurrentPlayerO && isMidPieceX);
+                isMidPieceOpponent = (isCurrentPlayerX && isMidPieceO) || (isCurrentPlayerO && isMidPieceX);
             }
 
-            return isMidPieceOpponent ;
+            return isMidPieceOpponent;
         }
 
         private bool isValidJump(int i_FromRow, int i_FromCol, int i_MidRow, int i_MidCol, int i_ToRow, int i_ToCol)
@@ -349,13 +349,13 @@ namespace CheckersGame.Logic
                 bool isJumpValid = isValidJump(fromRow, fromCol, (fromRow + toRow) / 2, (fromCol + toCol) / 2, toRow, toCol);
                 bool isLegal = (isValidRegular || isJumpValid);
 
-                if (isInChain && isPickedDifferentPiece) 
+                if (isInChain && isPickedDifferentPiece)
                 {
                     result = !isLegal ? eMoveResult.InvalidMove : eMoveResult.MustCaptureAgain;
                     isSkipFurtherChecks = true;
                 }
 
-                if (!isSkipFurtherChecks) 
+                if (!isSkipFurtherChecks)
                 {
                     result = validateAndExecutionMove(isLegal, isInChain, fromRow, fromCol, toRow, toCol);
                 }
@@ -404,7 +404,7 @@ namespace CheckersGame.Logic
 
         public eMoveResult MakeComputerMove()
         {
-            eMoveResult result = eMoveResult.InvalidMove; 
+            eMoveResult result = eMoveResult.InvalidMove;
             List<Move> captureMoves = getCaptureMovesForPlayer(m_CurrentPlayer);
             List<Move> validMoves = (captureMoves.Count > 0) ? captureMoves : getValidMovesForPlayer(m_CurrentPlayer);
 
@@ -432,11 +432,11 @@ namespace CheckersGame.Logic
 
                     if (cell == i_Player.Symbol)
                     {
-                        score += 1; 
+                        score += 1;
                     }
                     else if (cell == convertToKingSymbol(i_Player.Symbol))
                     {
-                        score += 4; 
+                        score += 4;
                     }
                 }
             }
@@ -466,25 +466,43 @@ namespace CheckersGame.Logic
 
         public bool IsGameOver(out Player o_Winner)
         {
-            o_Winner = null;
+            bool isGameOver = false;
 
-            // אם נשארו רק מלכים במשחק, נגמר בתיקו
+            o_Winner = null;
             if (IsKingVsKingOnly())
             {
-                return true;
+                isGameOver = true;
             }
-
-            // בדוק מהלכים חוקיים רק לשחקן הנוכחי
-            List<Move> currentPlayerMoves = getValidMovesForPlayer(m_CurrentPlayer);
-
-            if (currentPlayerMoves.Count == 0) // אין לו מהלכים חוקיים => הפסיד
+            else
             {
-                o_Winner = (m_CurrentPlayer == r_FirstPlayer) ? r_SecondPlayer : r_FirstPlayer;
-                calculateAndAddScore(o_Winner, m_CurrentPlayer);
-                return true;
+                List<Move> player1Moves = getValidMovesForPlayer(r_FirstPlayer);
+                List<Move> player2Moves = getValidMovesForPlayer(r_SecondPlayer);
+
+                if (player1Moves.Count == 0 && player2Moves.Count == 0)
+                {
+                    isGameOver = true;
+                }
+                else if (player1Moves.Count == 0)
+                {
+                    if (!PlayerMustCapture(r_SecondPlayer))
+                    {
+                        o_Winner = r_SecondPlayer;
+                        calculateAndAddScore(r_SecondPlayer, r_FirstPlayer);
+                        isGameOver = true;
+                    }
+                }
+                else if (player2Moves.Count == 0)
+                {
+                    if (!PlayerMustCapture(r_FirstPlayer))
+                    {
+                        o_Winner = r_FirstPlayer;
+                        calculateAndAddScore(r_FirstPlayer, r_SecondPlayer);
+                        isGameOver = true;
+                    }
+                }
             }
 
-            return false;
+            return isGameOver;
         }
 
         public void ResetGame(int i_BoardSize)
