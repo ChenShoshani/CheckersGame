@@ -124,7 +124,7 @@
 
         public int[] CountPieces()
         {
-            int[] counts = new int[4]; // [0]: PlayerXKings, [1]: PlayerXPlayer, [2]: PlayerOKings, [3]: PlayerOPlayer
+            int[] counts = new int[4]; 
 
             foreach (eCellState cell in r_Board)
             {
